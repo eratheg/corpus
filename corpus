@@ -1,0 +1,102 @@
+#ORIG m1
+newtot=0
+count=$(cat $1|grep -v lines|grep -v '^$'|wc -l)
+
+#Ordet innan SWE#
+orig1=$(cat $1|grep -v lines|grep -v -e '^$'|grep -v hokej|grep -ve '[0-9] : [0-9]'|awk -F '<' {'print $1'}|\
+awk '{print $NF}'|sed -e 's/\(.*\)/\L\1/'|grep -E "í$|á$|é$|ch$|ho$|mu$|ým$|ím$|ém$|mi$|ě$"|\
+grep -v 'jeho'|grep -v 'který'|grep -v 'let'|grep -v další|grep -v ách|\
+cut -c1-$2|sort|uniq -c|sort -n -k1|tac|head -$3)
+echo "$orig1" > temp.log 
+newcount1=$(cat $1|grep -v lines|grep -v -e '^$'|grep -v hokej|awk -F '<' {'print $1'}|awk '{print $NF}'|\
+sed -e 's/\(.*\)/\L\1/'|grep -E "í$|á$|é$|ch$|ho$|mu$|ým$|ím$|ém$|mi$|ě$"|\
+grep -v 'jeho'|grep -v 'který'|grep -v 'let'|grep -v další|grep -v ách|wc -l)
+tmp=0
+orig1=($orig1)
+echo "---------------------------------------"
+echo "$1 (1 före) analyseras (UTF8 med diakritik)"
+for item in "${orig1[@]}";do
+    if [ $((tmp%2)) -eq 0 ];then
+      perc=$(echo "scale=4 ; $item / $newcount1 * 100" | bc)
+      number=$item
+    else
+      echo -e "$number ($perc%)\t$item"
+    fi
+  let "tmp+=1"
+done
+echo "Analyserat $newcount1 legitima sökresultat"
+
+#Ordet 2 positioner efter SWE"
+
+orig2=$(cat $1|grep -v lines|grep -v -e '^$'|grep -v hokej|awk -F '>' {'print $2'}|\
+sed -e 's/^[ \t]*//'|grep -ve '[0-9] : [0-9]'|grep -E "^ve|^v|^je|^jsou|^bude|^byl|^být |^tak |^na |\
+^a |^má^|^nen|^neb"|awk -F ' ' {'print$2'}|grep -ve "^[A-Z]"|\
+grep -e 'ý$' -e 'á$' -e 'é$' -e 'ě$' -e 'í$' -e 'ch$' -e 'ou$' -e 'ho$' -e 'mi$' -e 'ým$' -e 'ím$' -e 'ém$' -e 'mi$'|\
+grep -v 'jeho'|grep -v 'který'|grep -v 'let'|grep -v 'další'|grep -v 'má'|grep -v 'jsou'|\
+cut -c1-$2|sort|uniq -c|sort -n -k1|tac|head -$3)
+echo "$orig2" >> temp.log 
+
+newcount2=$(cat $1|grep -v lines|grep -v -e '^$'|grep -v hokej|awk -F '>' {'print $2'}| sed -e 's/^[ \t]*//'|\
+grep -E "^ve|^v|^je|^jsou|^bude|^byl|^být |^tak |^na |^a |^má^|^nen|^neb"|awk -F ' ' {'print$2'}|\
+grep -e 'ý$' -e 'á$' -e 'é$' -e 'ě$' -e 'í$' -e 'ch$' -e 'ou$' -e 'ho$' -e 'mi$' -e 'ým$' -e 'ím$' -e 'ém$' -e 'mi$'|\
+grep -v 'jeho'|grep -v 'který'|grep -v 'let'|grep -v 'další'|grep -v 'má'|grep -v 'jsou'|\
+grep -ve "^[A-Z]"|wc -l)
+tmp=0
+orig2=($orig2)
+echo "---------------------------------------"
+echo "$1 (2 efter) analyseras (UTF8 med diakritik)"
+for item in "${orig2[@]}";do
+    if [ $((tmp%2)) -eq 0 ];then
+      perc=$(echo "scale=4 ; $item / $newcount2 * 100" | bc)
+      number=$item
+    else
+      echo -e "$number ($perc%)\t$item"
+    fi
+  let "tmp+=1"
+done
+echo "Analyserat $newcount2 legitima sökresultat efter filtrering"
+
+#Ordet direkt efter SWE"
+orig3=$(cat $1|grep -v lines|grep -v -e '^$'|grep -v hokej|awk -F '>' {'print $2'}|\
+sed -e 's/^[ \t]*//'|grep -ve '[0-9] : [0-9]'|awk -F ' ' {'print$1'}|\
+grep -e 'ý$' -e 'á$' -e 'é$' -e 'ě$' -e 'í$' -e 'ch$' -e 'ou$' -e 'ho$' -e 'mi$' -e 'ým$' -e 'ím$' -e 'ém$' -e 'mi$'|\
+grep -v 'jeho'|grep -v 'který'|grep -v 'let'|grep -v 'další'|grep -v 'má'|grep -v 'jsou'|\
+grep -ve "^[A-Z]"|cut -c1-$2|sort|uniq -c|sort -n -k1|tac|head -$3)
+echo "$orig3" >> temp.log 
+newcount3=$(cat $1|grep -v lines|grep -v -e '^$'|grep -v hokej|awk -F '>' {'print $2'}|sed -e 's/^[ \t]*//'|\
+grep -ve '[0-9] : [0-9]'|awk -F ' ' {'print$2'}|\
+grep -e 'ý$' -e 'á$' -e 'é$' -e 'ě$' -e 'í$' -e 'ch$' -e 'ou$' -e 'ho$' -e 'mi$' -e 'ým$' -e 'ím$' -e 'ém$' -e 'mi$'|\
+grep -v 'jeho'|grep -v 'který'|grep -v 'let'|grep -v 'další'|grep -v 'má'|grep -v 'jsou'|\
+grep -ve "^[A-Z]"|wc -l)
+tmp=0
+orig3=($orig3)
+echo "---------------------------------------"
+echo "$1 (1 efter) analyseras (UTF8 med diakritik)"
+for item in "${orig3[@]}";do
+    if [ $((tmp%2)) -eq 0 ];then
+      perc=$(echo "scale=4 ; $item / $newcount3 * 100" | bc)
+      number=$item
+    else
+      echo -e "$number ($perc%)\t$item"
+    fi
+  let "tmp+=1"
+done
+echo "Analyserat $newcount3 legitima sökresultat efter filtrering"
+echo "---------------------------------------"
+
+sum=$(cat temp.log|grep -e 'mu$' -e 'ý$' -e 'á$' -e 'é$' -e 'ě$' -e 'í$' -e 'ch$' -e 'ou$' -e 'ho$' -e 'mi$' -e 'ým$' -e 'ím$' -e 'ém$' -e 'mi$'|uniq|cut -c1-$2|sort -n -k1|tac|head -$3)
+sum=($sum)
+tmp=0
+newtot=$((newcount1 + newcount2 + newcount3))
+for item in "${sum[@]}";do
+    if [ $((tmp%2)) -eq 0 ];then
+      perc=$(echo "scale=4 ; $item / $newtot * 100" | bc)
+      number=$item
+    else
+      echo -e "$number ($perc%)\t$item"
+    fi
+  let "tmp+=1"
+done
+echo "---------------------------------------"
+echo "Analyserat $count sökresultat totalt, varav $newtot legitima"
+echo "---------------------------------------"
